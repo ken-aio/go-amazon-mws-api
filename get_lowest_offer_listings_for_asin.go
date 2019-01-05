@@ -1,4 +1,4 @@
-package entity
+package amazonmws
 
 import "encoding/xml"
 

@@ -9,7 +9,7 @@ fi
 
 name=$1
 prefix=$2
-echo "package entity" > $name.go
+echo "package amazonmws" > $name.go
 echo "" >> $name.go
 echo "import \"encoding/xml\"" >> $name.go
 echo "" >> $name.go

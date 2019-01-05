@@ -50,5 +50,5 @@ $ go get -u github.com/gnewton/chidley
   
 3. create struct from xml
 ```
-$ sh entities/xml_to_struct.sh get_matching_product_for_id Mat
+$ sh xml_to_struct.sh get_matching_product_for_id Mat
 ```

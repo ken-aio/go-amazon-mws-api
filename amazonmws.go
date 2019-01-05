@@ -1,4 +1,4 @@
-// amazonmws provides methods for interacting with the Amazon Marketplace Services API.
+// Package amazonmws provides methods for interacting with the Amazon Marketplace Services API.
 package amazonmws
 
 import (
@@ -8,12 +8,13 @@ import (
 	"strconv"
 )
 
+// FeeEstimateRequest is struct
 type FeeEstimateRequest struct {
-	IdValue             string
+	IDValue             string
 	PriceToEstimateFees float64
 	Currency            string
-	MarketplaceId       string
-	IdType              string
+	MarketplaceID       string
+	IDType              string
 	Identifier          string
 	IsAmazonFulfilled   bool
 }
@@ -32,26 +33,26 @@ func (f *FeeEstimateRequest) setDefaults(mid string) {
 		f.Currency = "USD"
 	}
 
-	if f.MarketplaceId == "" {
-		f.MarketplaceId = mid
+	if f.MarketplaceID == "" {
+		f.MarketplaceID = mid
 	}
 
-	if f.IdType == "" {
-		f.IdType = "ASIN"
+	if f.IDType == "" {
+		f.IDType = "ASIN"
 	}
 
 	if f.Identifier == "" {
-		f.Identifier = f.IdValue
+		f.Identifier = f.IDValue
 	}
 
 	f.IsAmazonFulfilled = true
 }
 
-func (f *FeeEstimateRequest) toQuery(index int, marketplaceId string) map[string]string {
+func (f *FeeEstimateRequest) toQuery(index int, marketplaceID string) map[string]string {
 	output := make(map[string]string)
 
-	f.setDefaults(marketplaceId)
-	output[f.requestString(index+1, "IdValue")] = f.IdValue
+	f.setDefaults(marketplaceID)
+	output[f.requestString(index+1, "IdValue")] = f.IDValue
 	output[f.requestString(index+1, "PriceToEstimateFees.ListingPrice.Amount")] = strconv.FormatFloat(f.PriceToEstimateFees, 'f', 2, 32)
 	output[f.requestString(index+1, "PriceToEstimateFees.ListingPrice.CurrencyCode")] = f.Currency
 	output[f.requestString(index+1, "PriceToEstimateFees.Shipping.Amount")] = "0"
@@ -59,8 +60,8 @@ func (f *FeeEstimateRequest) toQuery(index int, marketplaceId string) map[string
 	output[f.requestString(index+1, "PriceToEstimateFees.Points.PointsNumber")] = "0"
 	output[f.requestString(index+1, "PriceToEstimateFees.Points.PointsMonetaryValue.Amount")] = "0"
 	output[f.requestString(index+1, "PriceToEstimateFees.Points.PointsMonetaryValue.CurrencyCode")] = f.Currency
-	output[f.requestString(index+1, "MarketplaceId")] = f.MarketplaceId
-	output[f.requestString(index+1, "IdType")] = f.IdType
+	output[f.requestString(index+1, "MarketplaceId")] = f.MarketplaceID
+	output[f.requestString(index+1, "IdType")] = f.IDType
 	output[f.requestString(index+1, "Identifier")] = f.Identifier
 
 	var isFba string
@@ -92,7 +93,7 @@ func (api AmazonMWSAPI) ListMatchingProducts(query, queryContextID string) (stri
 /*
 GetLowestOfferListingsForASIN takes a list of ASINs and returns the result.
 */
-func (api AmazonMWSAPI) GetLowestOfferListingsForASIN(items []string, condition *string) (*entity.MwsLolGetLowestOfferListingsForASINResponse, error) {
+func (api AmazonMWSAPI) GetLowestOfferListingsForASIN(items []string, condition *string) (*MwsLolGetLowestOfferListingsForASINResponse, error) {
 	params := make(map[string]string)
 
 	for k, v := range items {
@@ -107,7 +108,7 @@ func (api AmazonMWSAPI) GetLowestOfferListingsForASIN(items []string, condition 
 	}
 
 	xmlStr, err := api.genSignAndFetch("GetLowestOfferListingsForASIN", "/Products/2011-10-01", params)
-	var resp entity.MwsLolGetLowestOfferListingsForASINResponse
+	var resp MwsLolGetLowestOfferListingsForASINResponse
 	xml.Unmarshal([]byte(xmlStr), &resp)
 	if resp.Attrxmlns == "" {
 		return nil, fmt.Errorf("error xml: %s", xmlStr)
@@ -116,9 +117,9 @@ func (api AmazonMWSAPI) GetLowestOfferListingsForASIN(items []string, condition 
 }
 
 /*
-GetCompetitivePricingForAsin takes a list of ASINs and returns the result.
+GetCompetitivePricingForASIN takes a list of ASINs and returns the result.
 */
-func (api AmazonMWSAPI) GetCompetitivePricingForASIN(items []string, condition *string) (*entity.MwsComGetCompetitivePricingForASINResponse, error) {
+func (api AmazonMWSAPI) GetCompetitivePricingForASIN(items []string, condition *string) (*MwsComGetCompetitivePricingForASINResponse, error) {
 	params := make(map[string]string)
 
 	for k, v := range items {
@@ -136,7 +137,7 @@ func (api AmazonMWSAPI) GetCompetitivePricingForASIN(items []string, condition *
 	if err != nil {
 		return nil, err
 	}
-	var resp entity.MwsComGetCompetitivePricingForASINResponse
+	var resp MwsComGetCompetitivePricingForASINResponse
 	xml.Unmarshal([]byte(xmlStr), &resp)
 	if resp.Attrxmlns == "" {
 		return nil, fmt.Errorf("error xml: %s", xmlStr)
@@ -144,7 +145,8 @@ func (api AmazonMWSAPI) GetCompetitivePricingForASIN(items []string, condition *
 	return &resp, err
 }
 
-func (api AmazonMWSAPI) GetMatchingProductForId(idType string, idList []string) (*entity.MwsMatGetMatchingProductForIdResponse, error) {
+// GetMatchingProductForID is mws api
+func (api AmazonMWSAPI) GetMatchingProductForID(idType string, idList []string) (*MwsMatGetMatchingProductForIdResponse, error) {
 	params := make(map[string]string)
 
 	for k, v := range idList {
@@ -159,7 +161,7 @@ func (api AmazonMWSAPI) GetMatchingProductForId(idType string, idList []string) 
 	if err != nil {
 		return nil, err
 	}
-	var resp entity.MwsMatGetMatchingProductForIdResponse
+	var resp MwsMatGetMatchingProductForIdResponse
 	xml.Unmarshal([]byte(xmlStr), &resp)
 	if resp.Attrxmlns == "" {
 		return nil, fmt.Errorf("error xml: %s", xmlStr)
@@ -167,6 +169,7 @@ func (api AmazonMWSAPI) GetMatchingProductForId(idType string, idList []string) 
 	return &resp, nil
 }
 
+// GetMyFeesEstimate is mws api
 func (api AmazonMWSAPI) GetMyFeesEstimate(items []FeeEstimateRequest) (string, error) {
 	params := make(map[string]string)
 
@@ -181,6 +184,7 @@ func (api AmazonMWSAPI) GetMyFeesEstimate(items []FeeEstimateRequest) (string, e
 	return api.genSignAndFetchViaPost("GetMyFeesEstimate", "/Products/2011-10-01", params)
 }
 
+// GetReportRequestStatus is mws api
 func (api AmazonMWSAPI) GetReportRequestStatus(reportID string) (string, error) {
 	params := make(map[string]string)
 
