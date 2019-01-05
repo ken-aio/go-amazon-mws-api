@@ -36,3 +36,19 @@ func main() {
        fmt.Println(result)
 }
 ```
+
+## Create entity struct
+
+1. save amazon mws api xml  
+  
+2. create struct using chidley  
+https://github.com/gnewton/chidley  
+  
+```
+$ go get -u github.com/gnewton/chidley
+```
+  
+3. create struct from xml
+```
+$ sh entities/xml_to_struct.sh get_matching_product_for_id Mat
+```
